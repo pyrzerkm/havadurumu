@@ -27,6 +27,9 @@ export interface Measurement {
   windSpeed: number;
   windDirection: number;
   pressure: number;
+  uvIndex: number;
+  precipitation: number;
+  visibility: number;
   timestamp: string;
   notes?: string;
 }

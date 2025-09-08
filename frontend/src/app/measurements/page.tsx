@@ -28,7 +28,22 @@ export default function MeasurementsPage() {
       try {
         const data = await stationsApi.getAll();
         setStations(data);
-        if (data.length > 0) {
+        
+        // URL parametresinden station ID'yi al
+        const urlParams = new URLSearchParams(window.location.search);
+        const stationId = urlParams.get('station');
+        
+        if (stationId && data.length > 0) {
+          // URL'deki station ID'ye göre istasyonu seç
+          const station = data.find(s => s._id === stationId);
+          if (station) {
+            setSelectedStation(station);
+          } else {
+            // Bulunamazsa ilk istasyonu seç
+            setSelectedStation(data[0]);
+          }
+        } else if (data.length > 0) {
+          // URL parametresi yoksa ilk istasyonu seç
           setSelectedStation(data[0]);
         }
       } catch (error) {
@@ -161,26 +176,50 @@ export default function MeasurementsPage() {
                   İstasyon Seçin
                 </label>
                 <div className="relative">
-                  <select
-                    id="station-select"
-                    value={selectedStation?._id || ''}
-                    onChange={(e) => {
-                      const station = stations.find(s => s._id === e.target.value);
-                      setSelectedStation(station || null);
-                    }}
-                    className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 sm:text-sm text-white appearance-none backdrop-blur-sm"
-                  >
-                    <option value="" className="bg-gray-800 text-white">İstasyon seçin...</option>
-                    {stations.map((station) => (
-                      <option key={station._id} value={station._id} className="bg-gray-800 text-white">
-                        {station.name} - {station.city}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="İstasyon ara..."
+                      className="block w-full px-4 py-3 pl-10 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 sm:text-sm text-white backdrop-blur-sm"
+                      onChange={(e) => {
+                        const searchTerm = e.target.value.toLowerCase();
+                        const filteredStations = stations.filter(station => 
+                          station.name.toLowerCase().includes(searchTerm) || 
+                          station.city.toLowerCase().includes(searchTerm)
+                        );
+                        if (filteredStations.length > 0 && searchTerm) {
+                          setSelectedStation(filteredStations[0]);
+                        }
+                      }}
+                    />
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="relative mt-2">
+                    <select
+                      id="station-select"
+                      value={selectedStation?._id || ''}
+                      onChange={(e) => {
+                        const station = stations.find(s => s._id === e.target.value);
+                        setSelectedStation(station || null);
+                      }}
+                      className="block w-full px-4 py-3 pr-10 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 sm:text-sm text-white appearance-none backdrop-blur-sm"
+                    >
+                      <option value="" className="bg-gray-800 text-white">İstasyon seçin...</option>
+                      {stations.map((station) => (
+                        <option key={station._id} value={station._id} className="bg-gray-800 text-white">
+                          {station.name} - {station.city}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -230,6 +269,15 @@ export default function MeasurementsPage() {
                             <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
                               Basınç (hPa)
                             </th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                              UV İndeksi
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                              Yağış (mm)
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                              Görüş (km)
+                            </th>
                           </tr>
                         </thead>
                         <tbody className="bg-white/5 divide-y divide-white/10">
@@ -273,6 +321,36 @@ export default function MeasurementsPage() {
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-500/20 text-gray-200 border border-gray-500/30">
                                   {measurement.pressure} hPa
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                  measurement.uvIndex > 8 ? 'bg-red-500/20 text-red-200 border border-red-500/30' :
+                                  measurement.uvIndex > 6 ? 'bg-orange-500/20 text-orange-200 border border-orange-500/30' :
+                                  measurement.uvIndex > 3 ? 'bg-yellow-500/20 text-yellow-200 border border-yellow-500/30' :
+                                  'bg-green-500/20 text-green-200 border border-green-500/30'
+                                }`}>
+                                  {measurement.uvIndex}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                  measurement.precipitation > 20 ? 'bg-blue-500/20 text-blue-200 border border-blue-500/30' :
+                                  measurement.precipitation > 10 ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/30' :
+                                  measurement.precipitation > 0 ? 'bg-sky-500/20 text-sky-200 border border-sky-500/30' :
+                                  'bg-gray-500/20 text-gray-200 border border-gray-500/30'
+                                }`}>
+                                  {measurement.precipitation} mm
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                  measurement.visibility > 20 ? 'bg-green-500/20 text-green-200 border border-green-500/30' :
+                                  measurement.visibility > 10 ? 'bg-yellow-500/20 text-yellow-200 border border-yellow-500/30' :
+                                  measurement.visibility > 5 ? 'bg-orange-500/20 text-orange-200 border border-orange-500/30' :
+                                  'bg-red-500/20 text-red-200 border border-red-500/30'
+                                }`}>
+                                  {measurement.visibility} km
                                 </span>
                               </td>
                             </tr>

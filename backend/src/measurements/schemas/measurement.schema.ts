@@ -24,6 +24,15 @@ export class Measurement {
   pressure: number; // hPa
 
   @Prop({ required: true })
+  uvIndex: number; // 0-11 UV indeksi
+
+  @Prop({ required: true })
+  precipitation: number; // mm cinsinden yağış miktarı
+
+  @Prop({ required: true })
+  visibility: number; // km cinsinden görüş mesafesi
+
+  @Prop({ required: true })
   timestamp: Date;
 
   @Prop({ default: '' })

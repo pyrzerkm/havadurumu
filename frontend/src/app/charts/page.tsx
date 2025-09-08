@@ -20,7 +20,7 @@ import {
   Bar,
 } from 'recharts';
 
-type ChartType = 'temperature' | 'humidity' | 'windSpeed' | 'pressure';
+type ChartType = 'temperature' | 'humidity' | 'windSpeed' | 'pressure' | 'windDirection' | 'feelsLike' | 'uvIndex' | 'precipitation' | 'visibility';
 type TimeRange = '24h' | '7d' | '30d';
 
 export default function ChartsPage() {
@@ -102,13 +102,40 @@ export default function ChartsPage() {
         console.log('Charts: API\'den gelen veriler:', measurements);
 
         // Veriyi grafik formatına dönüştür
-        const formattedData = measurements.map((measurement) => ({
-          timestamp: new Date(measurement.timestamp).toLocaleString('tr-TR'),
-          temperature: measurement.temperature,
-          humidity: measurement.humidity,
-          windSpeed: measurement.windSpeed,
-          pressure: measurement.pressure,
-        }));
+        const formattedData = measurements.map((measurement) => {
+          // Hissedilen sıcaklık hesaplama (Heat Index formülü)
+          const temp = measurement.temperature;
+          const humidity = measurement.humidity;
+          const windSpeed = measurement.windSpeed;
+          
+          // Basit hissedilen sıcaklık hesaplaması
+          let feelsLike = temp;
+          if (temp >= 27 && humidity >= 40) {
+            // Heat Index hesaplaması (basitleştirilmiş)
+            const hi = -8.78469475556 + 1.61139411 * temp + 2.33854883889 * humidity + 
+                       -0.14611605 * temp * humidity + -0.012308094 * Math.pow(temp, 2) + 
+                       -0.0164248277778 * Math.pow(humidity, 2) + 0.002211732 * Math.pow(temp, 2) * humidity + 
+                       0.00072546 * temp * Math.pow(humidity, 2) + -0.000003582 * Math.pow(temp, 2) * Math.pow(humidity, 2);
+            feelsLike = Math.round(hi * 10) / 10;
+          } else if (temp <= 10 && windSpeed > 4.8) {
+            // Wind Chill hesaplaması (basitleştirilmiş)
+            const wc = 13.12 + 0.6215 * temp - 11.37 * Math.pow(windSpeed, 0.16) + 0.3965 * temp * Math.pow(windSpeed, 0.16);
+            feelsLike = Math.round(wc * 10) / 10;
+          }
+
+          return {
+            timestamp: new Date(measurement.timestamp).toLocaleString('tr-TR'),
+            temperature: measurement.temperature,
+            humidity: measurement.humidity,
+            windSpeed: measurement.windSpeed,
+            pressure: measurement.pressure,
+            windDirection: measurement.windDirection,
+            feelsLike: feelsLike,
+            uvIndex: measurement.uvIndex,
+            precipitation: measurement.precipitation,
+            visibility: measurement.visibility,
+          };
+        });
 
         console.log('Charts: Formatlanmış veriler:', formattedData);
         setChartData(formattedData);
@@ -149,12 +176,34 @@ export default function ChartsPage() {
           console.log('Charts: Mevcut grafik verisi sayısı:', prev.length);
           
           // Yeni ölçümü grafik formatına dönüştür
+          const temp = Number(data.temperature);
+          const humidity = Number(data.humidity);
+          const windSpeed = Number(data.windSpeed);
+          
+          // Hissedilen sıcaklık hesaplama
+          let feelsLike = temp;
+          if (temp >= 27 && humidity >= 40) {
+            const hi = -8.78469475556 + 1.61139411 * temp + 2.33854883889 * humidity + 
+                       -0.14611605 * temp * humidity + -0.012308094 * Math.pow(temp, 2) + 
+                       -0.0164248277778 * Math.pow(humidity, 2) + 0.002211732 * Math.pow(temp, 2) * humidity + 
+                       0.00072546 * temp * Math.pow(humidity, 2) + -0.000003582 * Math.pow(temp, 2) * Math.pow(humidity, 2);
+            feelsLike = Math.round(hi * 10) / 10;
+          } else if (temp <= 10 && windSpeed > 4.8) {
+            const wc = 13.12 + 0.6215 * temp - 11.37 * Math.pow(windSpeed, 0.16) + 0.3965 * temp * Math.pow(windSpeed, 0.16);
+            feelsLike = Math.round(wc * 10) / 10;
+          }
+
           const newDataPoint = {
             timestamp: new Date(data.timestamp).toLocaleString('tr-TR'),
-            temperature: Number(data.temperature),
-            humidity: Number(data.humidity),
-            windSpeed: Number(data.windSpeed),
+            temperature: temp,
+            humidity: humidity,
+            windSpeed: windSpeed,
             pressure: Number(data.pressure),
+            windDirection: Number(data.windDirection),
+            feelsLike: feelsLike,
+            uvIndex: Number(data.uvIndex),
+            precipitation: Number(data.precipitation),
+            visibility: Number(data.visibility),
           };
 
           console.log('Charts: Yeni veri noktası:', newDataPoint);
@@ -186,6 +235,11 @@ export default function ChartsPage() {
       humidity: 'Nem',
       windSpeed: 'Rüzgar Hızı',
       pressure: 'Basınç',
+      windDirection: 'Rüzgar Yönü',
+      feelsLike: 'Hissedilen Sıcaklık',
+      uvIndex: 'UV İndeksi',
+      precipitation: 'Yağış Miktarı',
+      visibility: 'Görüş Mesafesi',
     };
     return `${typeNames[chartType]} Grafiği`;
   };
@@ -196,6 +250,11 @@ export default function ChartsPage() {
       humidity: 'Nem (%)',
       windSpeed: 'Rüzgar Hızı (km/h)',
       pressure: 'Basınç (hPa)',
+      windDirection: 'Rüzgar Yönü (°)',
+      feelsLike: 'Hissedilen Sıcaklık (°C)',
+      uvIndex: 'UV İndeksi',
+      precipitation: 'Yağış (mm)',
+      visibility: 'Görüş (km)',
     };
     return labels[chartType];
   };
@@ -206,6 +265,11 @@ export default function ChartsPage() {
       humidity: 'humidity',
       windSpeed: 'windSpeed',
       pressure: 'pressure',
+      windDirection: 'windDirection',
+      feelsLike: 'feelsLike',
+      uvIndex: 'uvIndex',
+      precipitation: 'precipitation',
+      visibility: 'visibility',
     };
     return keys[chartType];
   };
@@ -216,6 +280,11 @@ export default function ChartsPage() {
       humidity: '#3b82f6',
       windSpeed: '#10b981',
       pressure: '#8b5cf6',
+      windDirection: '#f59e0b',
+      feelsLike: '#ec4899',
+      uvIndex: '#f97316',
+      precipitation: '#06b6d4',
+      visibility: '#84cc16',
     };
     return colors[chartType];
   };
@@ -329,26 +398,50 @@ export default function ChartsPage() {
                     İstasyon Seçin
                   </label>
                   <div className="relative">
-                    <select
-                      id="station-select"
-                      value={selectedStation?._id || ''}
-                      onChange={(e) => {
-                        const station = stations.find(s => s._id === e.target.value);
-                        setSelectedStation(station || null);
-                      }}
-                      className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 sm:text-sm text-white appearance-none backdrop-blur-sm"
-                    >
-                      <option value="" className="bg-gray-800 text-white">İstasyon seçin...</option>
-                      {stations.map((station) => (
-                        <option key={station._id} value={station._id} className="bg-gray-800 text-white">
-                          {station.name} - {station.city}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="İstasyon ara..."
+                        className="block w-full px-4 py-3 pl-10 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 sm:text-sm text-white backdrop-blur-sm"
+                        onChange={(e) => {
+                          const searchTerm = e.target.value.toLowerCase();
+                          const filteredStations = stations.filter(station => 
+                            station.name.toLowerCase().includes(searchTerm) || 
+                            station.city.toLowerCase().includes(searchTerm)
+                          );
+                          if (filteredStations.length > 0 && searchTerm) {
+                            setSelectedStation(filteredStations[0]);
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="relative mt-2">
+                      <select
+                        id="station-select"
+                        value={selectedStation?._id || ''}
+                        onChange={(e) => {
+                          const station = stations.find(s => s._id === e.target.value);
+                          setSelectedStation(station || null);
+                        }}
+                        className="block w-full px-4 py-3 pr-10 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 sm:text-sm text-white appearance-none backdrop-blur-sm"
+                      >
+                        <option value="" className="bg-gray-800 text-white">İstasyon seçin...</option>
+                        {stations.map((station) => (
+                          <option key={station._id} value={station._id} className="bg-gray-800 text-white">
+                            {station.name} - {station.city}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -368,6 +461,11 @@ export default function ChartsPage() {
                       <option value="humidity" className="bg-gray-800 text-white">💧 Nem</option>
                       <option value="windSpeed" className="bg-gray-800 text-white">💨 Rüzgar Hızı</option>
                       <option value="pressure" className="bg-gray-800 text-white">📊 Basınç</option>
+                      <option value="windDirection" className="bg-gray-800 text-white">🧭 Rüzgar Yönü</option>
+                      <option value="feelsLike" className="bg-gray-800 text-white">🌡️ Hissedilen Sıcaklık</option>
+                      <option value="uvIndex" className="bg-gray-800 text-white">🌞 UV İndeksi</option>
+                      <option value="precipitation" className="bg-gray-800 text-white">🌧️ Yağış Miktarı</option>
+                      <option value="visibility" className="bg-gray-800 text-white">👁️ Görüş Mesafesi</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
