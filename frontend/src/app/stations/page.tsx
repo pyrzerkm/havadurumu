@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Layout/Sidebar';
-import Header from '@/components/Layout/Header';
 import { Station } from '@/types';
 import { stationsApi } from '@/lib/api';
 
@@ -61,26 +60,37 @@ export default function StationsPage() {
       <Sidebar user={user} />
       
       <div className="flex-1 flex flex-col relative z-0">
-        <Header user={user} onLogout={logout} />
+        {/* Header kısmını en üste çekelim */}
+        <div className="p-4 border-b border-white/10 bg-gradient-to-r from-white/5 to-purple-500/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+                Meteoroloji İstasyonları
+              </h2>
+              <p className="text-sm text-yellow-300 mt-1">
+                Sistemdeki tüm hava durumu istasyonlarını görüntüleyin
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
+                <span className="text-sm text-gray-300">{stations.length} İstasyon</span>
+              </div>
+              <button
+                onClick={logout}
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Çıkış Yap</span>
+              </button>
+            </div>
+          </div>
+        </div>
         
         <main className="flex-1 p-6">
           <div className="bg-black/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
-            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-white/5 to-rose-500/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
-                    Meteoroloji İstasyonları
-                  </h2>
-                  <p className="text-sm text-gray-300 mt-1">
-                    Sistemdeki tüm hava durumu istasyonlarını görüntüleyin
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-                  <span className="text-sm text-gray-300">{stations.length} İstasyon</span>
-                </div>
-              </div>
-            </div>
             
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

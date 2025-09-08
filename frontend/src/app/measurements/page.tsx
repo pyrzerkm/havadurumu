@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Layout/Sidebar';
-import Header from '@/components/Layout/Header';
 import { Station, Measurement } from '@/types';
 import { stationsApi, measurementsApi } from '@/lib/api';
 
@@ -121,28 +120,39 @@ export default function MeasurementsPage() {
       <Sidebar user={user} />
       
       <div className="flex-1 flex flex-col relative z-0">
-        <Header user={user} onLogout={logout} />
+        {/* Header kısmını en üste çekelim */}
+        <div className="p-4 border-b border-white/10 bg-gradient-to-r from-white/5 to-purple-500/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+                Ölçüm Verileri
+              </h2>
+              <p className="text-sm text-yellow-300 mt-1">
+                İstasyonlardan alınan son ölçüm verilerini görüntüleyin
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className={`w-3 h-3 rounded-full shadow-lg ${
+                  isConnected ? 'bg-green-400 animate-pulse shadow-green-400/50' : 'bg-red-400 shadow-red-400/50'
+                }`}></div>
+                <span className="text-sm text-gray-300">{isConnected ? 'Canlı Veri' : 'Bağlantı Yok'}</span>
+              </div>
+              <button
+                onClick={logout}
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Çıkış Yap</span>
+              </button>
+            </div>
+          </div>
+        </div>
         
         <main className="flex-1 p-6">
           <div className="bg-black/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
-            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-white/5 to-emerald-500/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
-                    Ölçüm Verileri
-                  </h2>
-                  <p className="text-sm text-gray-300 mt-1">
-                    İstasyonlardan alınan son ölçüm verilerini görüntüleyin
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className={`w-3 h-3 rounded-full shadow-lg ${
-                    isConnected ? 'bg-green-400 animate-pulse shadow-green-400/50' : 'bg-red-400 shadow-red-400/50'
-                  }`}></div>
-                  <span className="text-sm text-gray-300">{isConnected ? 'Canlı Veri' : 'Bağlantı Yok'}</span>
-                </div>
-              </div>
-            </div>
             
             <div className="p-6">
               {/* İstasyon Seçimi */}
