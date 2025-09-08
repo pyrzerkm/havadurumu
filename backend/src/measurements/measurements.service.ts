@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Measurement, MeasurementDocument } from './schemas/measurement.schema';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class MeasurementsService {
 
   async findByStation(stationId: string, limit: number = 30): Promise<Measurement[]> {
     return this.measurementModel
-      .find({ stationId })
+      .find({ stationId: new Types.ObjectId(stationId) })
       .populate('stationId')
       .sort({ timestamp: -1 })
       .limit(limit)
@@ -31,7 +31,7 @@ export class MeasurementsService {
 
   async findLatestByStation(stationId: string): Promise<Measurement | null> {
     return this.measurementModel
-      .findOne({ stationId })
+      .findOne({ stationId: new Types.ObjectId(stationId) })
       .populate('stationId')
       .sort({ timestamp: -1 })
       .exec();
@@ -42,7 +42,11 @@ export class MeasurementsService {
     const latestMeasurements: Measurement[] = [];
     
     for (const stationId of stations) {
-      const latest = await this.findLatestByStation(stationId.toString());
+      const latest = await this.measurementModel
+        .findOne({ stationId: new Types.ObjectId(stationId.toString()) })
+        .populate('stationId')
+        .sort({ timestamp: -1 })
+        .exec();
       if (latest) {
         latestMeasurements.push(latest);
       }
@@ -62,7 +66,7 @@ export class MeasurementsService {
   async getMeasurementsByDateRange(stationId: string, startDate: Date, endDate: Date): Promise<Measurement[]> {
     return this.measurementModel
       .find({
-        stationId,
+        stationId: new Types.ObjectId(stationId),
         timestamp: { $gte: startDate, $lte: endDate }
       })
       .populate('stationId')

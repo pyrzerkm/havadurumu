@@ -99,11 +99,11 @@ export default function MeasurementsPage() {
                     const station = stations.find(s => s._id === e.target.value);
                     setSelectedStation(station || null);
                   }}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 bg-white"
                 >
-                  <option value="">İstasyon seçin...</option>
+                  <option value="" className="text-gray-900">İstasyon seçin...</option>
                   {stations.map((station) => (
-                    <option key={station._id} value={station._id}>
+                    <option key={station._id} value={station._id} className="text-gray-900">
                       {station.name} - {station.city}
                     </option>
                   ))}

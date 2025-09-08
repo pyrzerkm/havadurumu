@@ -81,16 +81,14 @@ npm run dev
 Frontend http://localhost:3000 adresinde çalışacak.
 
 ### 4. Örnek Veri Oluşturun
-Backend çalıştıktan sonra:
-```bash
-curl -X POST http://localhost:3001/seed
+Backend çalıştıktan sonr
 ```
 
 ## 👤 Test Hesapları
 
 ### Admin Kullanıcısı
 - **E-posta**: admin@weather.com
-- **Şifre**: admin123
+- **Şifre**: dan
 
 ### Normal Kullanıcı
 - **E-posta**: user@weather.com

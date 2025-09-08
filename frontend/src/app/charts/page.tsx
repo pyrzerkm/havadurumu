@@ -179,18 +179,18 @@ export default function ChartsPage() {
                   <label htmlFor="station-select" className="block text-sm font-medium text-gray-700 mb-2">
                     İstasyon
                   </label>
-                  <select
-                    id="station-select"
-                    value={selectedStation?._id || ''}
-                    onChange={(e) => {
-                      const station = stations.find(s => s._id === e.target.value);
-                      setSelectedStation(station || null);
-                    }}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  >
-                    <option value="">İstasyon seçin...</option>
+                <select
+                  id="station-select"
+                  value={selectedStation?._id || ''}
+                  onChange={(e) => {
+                    const station = stations.find(s => s._id === e.target.value);
+                    setSelectedStation(station || null);
+                  }}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 bg-white"
+                >
+                    <option value="" className="text-gray-900">İstasyon seçin...</option>
                     {stations.map((station) => (
-                      <option key={station._id} value={station._id}>
+                      <option key={station._id} value={station._id} className="text-gray-900">
                         {station.name} - {station.city}
                       </option>
                     ))}
@@ -205,12 +205,12 @@ export default function ChartsPage() {
                     id="chart-type"
                     value={chartType}
                     onChange={(e) => setChartType(e.target.value as ChartType)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 bg-white"
                   >
-                    <option value="temperature">Sıcaklık</option>
-                    <option value="humidity">Nem</option>
-                    <option value="windSpeed">Rüzgar Hızı</option>
-                    <option value="pressure">Basınç</option>
+                    <option value="temperature" className="text-gray-900">Sıcaklık</option>
+                    <option value="humidity" className="text-gray-900">Nem</option>
+                    <option value="windSpeed" className="text-gray-900">Rüzgar Hızı</option>
+                    <option value="pressure" className="text-gray-900">Basınç</option>
                   </select>
                 </div>
 
@@ -222,11 +222,11 @@ export default function ChartsPage() {
                     id="time-range"
                     value={timeRange}
                     onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 bg-white"
                   >
-                    <option value="24h">Son 24 Saat</option>
-                    <option value="7d">Son 7 Gün</option>
-                    <option value="30d">Son 30 Gün</option>
+                    <option value="24h" className="text-gray-900">Son 24 Saat</option>
+                    <option value="7d" className="text-gray-900">Son 7 Gün</option>
+                    <option value="30d" className="text-gray-900">Son 30 Gün</option>
                   </select>
                 </div>
               </div>
