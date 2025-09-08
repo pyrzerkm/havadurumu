@@ -41,6 +41,16 @@ export class MeasurementsService {
       .exec();
   }
 
+  async getLatestDateByStation(stationId: string): Promise<Date | null> {
+    const latestMeasurement = await this.measurementModel
+      .findOne({ stationId: new Types.ObjectId(stationId) })
+      .sort({ timestamp: -1 })
+      .select('timestamp')
+      .exec();
+    
+    return latestMeasurement ? latestMeasurement.timestamp : null;
+  }
+
   async findLatestAllStations(): Promise<Measurement[]> {
     const stations = await this.measurementModel.distinct('stationId');
     const latestMeasurements: Measurement[] = [];

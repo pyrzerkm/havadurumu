@@ -21,7 +21,7 @@ import {
 } from 'recharts';
 
 type ChartType = 'temperature' | 'humidity' | 'windSpeed' | 'pressure' | 'windDirection' | 'feelsLike' | 'uvIndex' | 'precipitation' | 'visibility';
-type TimeRange = '24h' | '7d' | '30d';
+type TimeRange = '24h' | '7d' | '30d' | 'all';
 
 export default function ChartsPage() {
   const { user, logout, loading } = useAuth();
@@ -64,26 +64,35 @@ export default function ChartsPage() {
       
       setChartLoading(true);
       try {
-        const now = new Date();
+        // En son veri tarihini al (dinamik referans)
+        const latestDateString = await measurementsApi.getLatestDateByStation(selectedStation._id);
+        const referenceDate = latestDateString ? new Date(latestDateString) : new Date();
+        
+        console.log('Charts: Referans tarihi (en son veri):', referenceDate);
+        
         let startDate: Date;
         let endDate: Date;
         
         switch (timeRange) {
           case '24h':
-            startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-            endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Gelecek 24 saat de dahil
+            startDate = new Date(referenceDate.getTime() - 24 * 60 * 60 * 1000);
+            endDate = new Date(referenceDate.getTime() + 24 * 60 * 60 * 1000); // Gelecek 24 saat de dahil
             break;
           case '7d':
-            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            endDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Gelecek 7 gün de dahil
+            startDate = new Date(referenceDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+            endDate = new Date(referenceDate.getTime() + 7 * 24 * 60 * 60 * 1000); // Gelecek 7 gün de dahil
             break;
           case '30d':
-            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-            endDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // Gelecek 30 gün de dahil
+            startDate = new Date(referenceDate.getTime() - 30 * 24 * 60 * 60 * 1000);
+            endDate = new Date(referenceDate.getTime() + 30 * 24 * 60 * 60 * 1000); // Gelecek 30 gün de dahil
+            break;
+          case 'all':
+            startDate = new Date(referenceDate.getTime() - 30 * 24 * 60 * 60 * 1000); // Geçmiş 30 gün
+            endDate = new Date(referenceDate.getTime() + 30 * 24 * 60 * 60 * 1000); // Gelecek 30 gün
             break;
           default:
-            startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-            endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+            startDate = new Date(referenceDate.getTime() - 24 * 60 * 60 * 1000);
+            endDate = new Date(referenceDate.getTime() + 24 * 60 * 60 * 1000);
         }
 
         console.log('Charts: Veri yükleme başlıyor...', {
@@ -489,6 +498,7 @@ export default function ChartsPage() {
                       <option value="24h" className="bg-gray-800 text-white">📅 Son 24 Saat</option>
                       <option value="7d" className="bg-gray-800 text-white">📆 Son 7 Gün</option>
                       <option value="30d" className="bg-gray-800 text-white">🗓️ Son 30 Gün</option>
+                      <option value="all" className="bg-gray-800 text-white">🌐 Tüm Veriler</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

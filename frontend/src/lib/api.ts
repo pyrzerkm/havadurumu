@@ -75,6 +75,9 @@ export const measurementsApi = {
   getLatestByStation: (stationId: string): Promise<Measurement> =>
     api.get(`/measurements/station/${stationId}/latest`).then(res => res.data),
   
+  getLatestDateByStation: (stationId: string): Promise<string> =>
+    api.get(`/measurements/station/${stationId}/latest-date`).then(res => res.data),
+  
   getByDateRange: (stationId: string, startDate: string, endDate: string): Promise<Measurement[]> =>
     api.get(`/measurements/station/${stationId}/range`, {
       params: { startDate, endDate }

@@ -41,6 +41,11 @@ export class MeasurementsController {
     return this.measurementsService.findLatestByStation(stationId);
   }
 
+  @Get('station/:stationId/latest-date')
+  getLatestDateByStation(@Param('stationId') stationId: string) {
+    return this.measurementsService.getLatestDateByStation(stationId);
+  }
+
   @Get('station/:stationId/range')
   getMeasurementsByDateRange(
     @Param('stationId') stationId: string,
