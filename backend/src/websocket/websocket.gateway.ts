@@ -34,7 +34,11 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
   // Yeni ölçüm eklendiğinde tüm istasyon dinleyicilerine bildirim gönder
   broadcastNewMeasurement(stationId: string, measurement: any) {
-    this.server.to(`station_${stationId}`).emit('new_measurement', measurement);
+    console.log(`Broadcasting new measurement for station ${stationId}:`, measurement);
+    // Sadece o istasyonun room'una gönder
+    this.server.to(`station_${stationId}`).emit('newMeasurement', measurement);
+    // Harita için global broadcast
+    this.server.emit('mapUpdate', measurement);
   }
 
   // İstasyon güncellendiğinde bildirim gönder

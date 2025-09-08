@@ -8,7 +8,11 @@ export class MeasurementsService {
   constructor(@InjectModel(Measurement.name) private measurementModel: Model<MeasurementDocument>) {}
 
   async create(createMeasurementDto: any): Promise<Measurement> {
-    const createdMeasurement = new this.measurementModel(createMeasurementDto);
+    const measurementData = {
+      ...createMeasurementDto,
+      stationId: new Types.ObjectId(createMeasurementDto.stationId)
+    };
+    const createdMeasurement = new this.measurementModel(measurementData);
     return createdMeasurement.save();
   }
 

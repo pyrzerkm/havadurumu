@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { WebSocketProvider } from '@/contexts/WebSocketContext';
 
 export const metadata: Metadata = {
   title: 'Hava Durumu Sistemi',
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="tr">
       <body className="font-sans">
         <AuthProvider>
-          {children}
+          <WebSocketProvider>
+            {children}
+          </WebSocketProvider>
         </AuthProvider>
       </body>
     </html>

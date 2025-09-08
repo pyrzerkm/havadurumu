@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWebSocket } from '@/contexts/WebSocketContext';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Layout/Sidebar';
 import Header from '@/components/Layout/Header';
@@ -10,6 +11,7 @@ import { stationsApi, measurementsApi } from '@/lib/api';
 
 export default function MeasurementsPage() {
   const { user, logout, loading } = useAuth();
+  const { socket, isConnected } = useWebSocket();
   const router = useRouter();
   const [stations, setStations] = useState<Station[]>([]);
   const [selectedStation, setSelectedStation] = useState<Station | null>(null);
@@ -57,6 +59,43 @@ export default function MeasurementsPage() {
 
     fetchMeasurements();
   }, [selectedStation]);
+
+  // WebSocket dinleyicisi - yeni ölçüm geldiğinde güncelle
+  useEffect(() => {
+    if (!socket || !selectedStation) return;
+
+    // İstasyon room'una katıl
+    socket.emit('join_station', selectedStation._id);
+    console.log(`Joined station room: ${selectedStation._id}`);
+
+    const handleNewMeasurement = (data: any) => {
+      console.log('Yeni ölçüm alındı:', data);
+      if (data.stationId === selectedStation._id) {
+        // Seçili istasyon için yeni ölçüm geldi, listeyi güncelle
+        setMeasurements(prev => {
+          // Duplikasyon kontrolü - aynı ID'ye sahip ölçüm varsa güncelle, yoksa ekle
+          const existingIndex = prev.findIndex(m => m._id === data._id);
+          if (existingIndex >= 0) {
+            // Mevcut ölçümü güncelle
+            const updated = [...prev];
+            updated[existingIndex] = data;
+            return updated.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+          } else {
+            // Yeni ölçüm ekle
+            const newMeasurements = [data, ...prev];
+            return newMeasurements.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+          }
+        });
+      }
+    };
+
+    socket.on('newMeasurement', handleNewMeasurement);
+
+    return () => {
+      socket.emit('leave_station', selectedStation._id);
+      socket.off('newMeasurement', handleNewMeasurement);
+    };
+  }, [socket, selectedStation]);
 
   if (loading) {
     return (
@@ -147,7 +186,9 @@ export default function MeasurementsPage() {
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                          {measurements.map((measurement) => (
+                          {measurements
+                            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                            .map((measurement) => (
                             <tr key={measurement._id} className="hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {new Date(measurement.timestamp).toLocaleString('tr-TR')}

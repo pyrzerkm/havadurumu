@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Station, Measurement } from '@/types';
 import { measurementsApi } from '@/lib/api';
+import { useWebSocket } from '@/contexts/WebSocketContext';
 
 // Leaflet'i dynamic import ile yükle
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { 
@@ -33,6 +34,7 @@ interface WeatherMapProps {
 }
 
 const WeatherMap: React.FC<WeatherMapProps> = ({ stations, onStationSelect }) => {
+  const { socket } = useWebSocket();
   const [latestMeasurements, setLatestMeasurements] = useState<Measurement[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,6 +58,32 @@ const WeatherMap: React.FC<WeatherMapProps> = ({ stations, onStationSelect }) =>
       fetchLatestMeasurements();
     }
   }, [stations]);
+
+  // WebSocket dinleyicisi - yeni ölçüm geldiğinde haritayı güncelle
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMapUpdate = (data: any) => {
+      console.log('Harita için yeni ölçüm alındı:', data);
+      setLatestMeasurements(prev => {
+        // Mevcut ölçümü güncelle veya yeni ekle
+        const existingIndex = prev.findIndex(m => m.stationId._id === data.stationId);
+        if (existingIndex >= 0) {
+          const updated = [...prev];
+          updated[existingIndex] = data;
+          return updated;
+        } else {
+          return [...prev, data];
+        }
+      });
+    };
+
+    socket.on('mapUpdate', handleMapUpdate);
+
+    return () => {
+      socket.off('mapUpdate', handleMapUpdate);
+    };
+  }, [socket]);
 
   const getTemperatureColor = (temperature: number) => {
     if (temperature < 0) return '#0066cc'; // Mavi - çok soğuk
