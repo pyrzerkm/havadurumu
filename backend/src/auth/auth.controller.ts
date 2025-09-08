@@ -8,11 +8,18 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: { email: string; password: string }) {
+    console.log('AuthController: Login request:', loginDto);
     const user = await this.authService.validateUser(loginDto.email, loginDto.password);
+    console.log('AuthController: validateUser result:', user);
+    
     if (!user) {
+      console.log('AuthController: Kullanıcı doğrulanamadı');
       throw new Error('Invalid credentials - User not found or password incorrect');
     }
-    return this.authService.login(user);
+    
+    const result = await this.authService.login(user);
+    console.log('AuthController: Login result:', result);
+    return result;
   }
 
   @Post('register')

@@ -275,24 +275,26 @@ export default function ChartsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
       <Sidebar user={user} />
       
       <div className="flex-1 flex flex-col">
         <Header user={user} onLogout={logout} />
         
         <main className="flex-1 p-6">
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+            <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-white/50 to-blue-50/50">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Grafikler</h2>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+                    Veri Analizi & Grafikler
+                  </h2>
                   <p className="text-sm text-gray-600 mt-1">
                     Hava durumu verilerini grafik olarak görüntüleyin
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
                   <span className="text-sm text-gray-600">
                     {isConnected ? 'Anlık güncelleme aktif' : 'Bağlantı yok'}
                   </span>
@@ -302,103 +304,157 @@ export default function ChartsPage() {
             
             <div className="p-6">
               {/* Kontroller */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div>
-                  <label htmlFor="station-select" className="block text-sm font-medium text-gray-700 mb-2">
-                    İstasyon
+                  <label htmlFor="station-select" className="block text-sm font-semibold text-gray-700 mb-3">
+                    İstasyon Seçin
                   </label>
-                <select
-                  id="station-select"
-                  value={selectedStation?._id || ''}
-                  onChange={(e) => {
-                    const station = stations.find(s => s._id === e.target.value);
-                    setSelectedStation(station || null);
-                  }}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 bg-white"
-                >
-                    <option value="" className="text-gray-900">İstasyon seçin...</option>
-                    {stations.map((station) => (
-                      <option key={station._id} value={station._id} className="text-gray-900">
-                        {station.name} - {station.city}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="station-select"
+                      value={selectedStation?._id || ''}
+                      onChange={(e) => {
+                        const station = stations.find(s => s._id === e.target.value);
+                        setSelectedStation(station || null);
+                      }}
+                      className="block w-full px-4 py-3 bg-white/80 border border-gray-200/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm text-gray-900 appearance-none"
+                    >
+                      <option value="" className="text-gray-900">İstasyon seçin...</option>
+                      {stations.map((station) => (
+                        <option key={station._id} value={station._id} className="text-gray-900">
+                          {station.name} - {station.city}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
-                  <label htmlFor="chart-type" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="chart-type" className="block text-sm font-semibold text-gray-700 mb-3">
                     Grafik Türü
                   </label>
-                  <select
-                    id="chart-type"
-                    value={chartType}
-                    onChange={(e) => setChartType(e.target.value as ChartType)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 bg-white"
-                  >
-                    <option value="temperature" className="text-gray-900">Sıcaklık</option>
-                    <option value="humidity" className="text-gray-900">Nem</option>
-                    <option value="windSpeed" className="text-gray-900">Rüzgar Hızı</option>
-                    <option value="pressure" className="text-gray-900">Basınç</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="chart-type"
+                      value={chartType}
+                      onChange={(e) => setChartType(e.target.value as ChartType)}
+                      className="block w-full px-4 py-3 bg-white/80 border border-gray-200/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm text-gray-900 appearance-none"
+                    >
+                      <option value="temperature" className="text-gray-900">🌡️ Sıcaklık</option>
+                      <option value="humidity" className="text-gray-900">💧 Nem</option>
+                      <option value="windSpeed" className="text-gray-900">💨 Rüzgar Hızı</option>
+                      <option value="pressure" className="text-gray-900">📊 Basınç</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
-                  <label htmlFor="time-range" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="time-range" className="block text-sm font-semibold text-gray-700 mb-3">
                     Zaman Aralığı
                   </label>
-                  <select
-                    id="time-range"
-                    value={timeRange}
-                    onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 bg-white"
-                  >
-                    <option value="24h" className="text-gray-900">Son 24 Saat</option>
-                    <option value="7d" className="text-gray-900">Son 7 Gün</option>
-                    <option value="30d" className="text-gray-900">Son 30 Gün</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="time-range"
+                      value={timeRange}
+                      onChange={(e) => setTimeRange(e.target.value as TimeRange)}
+                      className="block w-full px-4 py-3 bg-white/80 border border-gray-200/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm text-gray-900 appearance-none"
+                    >
+                      <option value="24h" className="text-gray-900">📅 Son 24 Saat</option>
+                      <option value="7d" className="text-gray-900">📆 Son 7 Gün</option>
+                      <option value="30d" className="text-gray-900">🗓️ Son 30 Gün</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Grafik */}
               {selectedStation && (
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    {selectedStation.name} - {getChartTitle()}
-                  </h3>
+                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-gray-900">
+                      {selectedStation.name} - {getChartTitle()}
+                    </h3>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      <span>{chartData.length} veri noktası</span>
+                    </div>
+                  </div>
                   
                   {chartLoading ? (
-                    <div className="text-center py-8">
-                      <div className="text-lg">Grafik verileri yükleniyor...</div>
+                    <div className="text-center py-12">
+                      <div className="inline-flex items-center space-x-3">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <div className="text-lg text-gray-600">Grafik verileri yükleniyor...</div>
+                      </div>
                     </div>
                   ) : (
-                    <div className="h-96">
+                    <div className="h-[500px] bg-gradient-to-br from-white/50 to-blue-50/30 rounded-xl p-4 border border-gray-200/50">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
                           <XAxis 
                             dataKey="timestamp" 
-                            tick={{ fontSize: 12 }}
+                            tick={{ fontSize: 12, fill: '#6b7280' }}
                             angle={-45}
                             textAnchor="end"
                             height={80}
+                            stroke="#9ca3af"
                           />
                           <YAxis 
-                            label={{ value: getYAxisLabel(), angle: -90, position: 'insideLeft' }}
+                            label={{ value: getYAxisLabel(), angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#6b7280' } }}
                             domain={['dataMin', 'dataMax']}
                             allowDataOverflow={false}
+                            tick={{ fontSize: 12, fill: '#6b7280' }}
+                            stroke="#9ca3af"
                           />
-                          <Tooltip />
+                          <Tooltip 
+                            contentStyle={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                              border: '1px solid #e5e7eb',
+                              borderRadius: '12px',
+                              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                            }}
+                          />
                           <Legend />
                           <Line 
                             type="monotone" 
                             dataKey={getDataKey()} 
                             stroke={getColor()} 
-                            strokeWidth={2}
-                            dot={{ r: 4 }}
+                            strokeWidth={3}
+                            dot={{ r: 6, fill: getColor(), strokeWidth: 2, stroke: '#fff' }}
+                            activeDot={{ r: 8, stroke: getColor(), strokeWidth: 2, fill: '#fff' }}
                             name={getChartTitle()}
                           />
                         </LineChart>
                       </ResponsiveContainer>
+                    </div>
+                  )}
+                  
+                  {chartData.length === 0 && !chartLoading && (
+                    <div className="text-center py-12">
+                      <div className="flex flex-col items-center space-y-4">
+                        <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                        </svg>
+                        <div className="text-gray-500 text-lg">Seçilen zaman aralığında veri bulunamadı.</div>
+                      </div>
                     </div>
                   )}
                 </div>

@@ -51,23 +51,33 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
       <Sidebar user={user} />
       
       <div className="flex-1 flex flex-col">
         <Header user={user} onLogout={logout} />
         
         <main className="flex-1 p-6">
-          <div className="bg-white rounded-lg shadow-sm h-full">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Hava Durumu Haritası</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                İstasyonları harita üzerinde görüntüleyin ve güncel hava durumu verilerini inceleyin
-              </p>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 h-full overflow-hidden">
+            <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-white/50 to-blue-50/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+                    Hava Durumu Haritası
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    İstasyonları harita üzerinde görüntüleyin ve güncel hava durumu verilerini inceleyin
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-gray-600">Canlı Veri</span>
+                </div>
+              </div>
             </div>
             
             <div className="p-6 h-full">
-              <div className="h-[calc(100vh-200px)]">
+              <div className="h-[calc(100vh-200px)] rounded-xl overflow-hidden shadow-lg border border-gray-200/50">
                 <WeatherMap 
                   stations={stations} 
                   onStationSelect={(station) => {
