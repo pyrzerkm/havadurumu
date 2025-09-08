@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   }
 
   return (
-    <div className="w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white h-full flex flex-col shadow-2xl">
+    <div className="w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white h-full flex flex-col shadow-2xl relative z-20">
       {/* Logo/Header */}
       <div className="p-6 border-b border-slate-700/50">
         <div className="flex items-center space-x-3">
@@ -90,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
               WeatherPro
             </h1>
             <p className="text-sm text-slate-400">Meteoroloji Sistemi</p>
@@ -117,8 +117,8 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-white truncate">{user.name || 'Kullanıcı'}</p>
-              <p className="text-xs text-slate-400 truncate">{user.email || 'E-posta yükleniyor...'}</p>
+              <p className="font-semibold text-yellow-300 truncate">{user.name || 'Kullanıcı'}</p>
+              <p className="text-xs text-yellow-400 truncate">{user.email || 'E-posta yükleniyor...'}</p>
               {user.role === 'admin' && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-yellow-400/20 to-orange-500/20 text-yellow-300 border border-yellow-400/30 mt-1">
                   <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -141,10 +141,10 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                className={`group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 pointer-events-auto cursor-pointer ${
                   isActive
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25'
-                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-md'
+                    : 'text-yellow-300 hover:bg-slate-800/50 hover:text-yellow-200 hover:shadow-md'
                 }`}
               >
                 <div className={`transition-colors duration-200 ${
@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium">{item.label}</p>
                   <p className={`text-xs transition-colors duration-200 ${
-                    isActive ? 'text-blue-100' : 'text-slate-500 group-hover:text-slate-300'
+                    isActive ? 'text-blue-100' : 'text-yellow-400 group-hover:text-yellow-300'
                   }`}>
                     {item.description}
                   </p>

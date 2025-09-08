@@ -275,27 +275,36 @@ export default function ChartsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 left-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+      </div>
+      
       <Sidebar user={user} />
       
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col relative z-0">
         <Header user={user} onLogout={logout} />
         
         <main className="flex-1 p-6">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
-            <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-white/50 to-blue-50/50">
+          <div className="bg-black/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
+            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-white/5 to-violet-500/10">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
                     Veri Analizi & Grafikler
                   </h2>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-300 mt-1">
                     Hava durumu verilerini grafik olarak görüntüleyin
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-                  <span className="text-sm text-gray-600">
+                  <div className={`w-3 h-3 rounded-full shadow-lg ${
+                    isConnected ? 'bg-green-400 animate-pulse shadow-green-400/50' : 'bg-red-400 shadow-red-400/50'
+                  }`}></div>
+                  <span className="text-sm text-gray-300">
                     {isConnected ? 'Anlık güncelleme aktif' : 'Bağlantı yok'}
                   </span>
                 </div>
@@ -306,7 +315,7 @@ export default function ChartsPage() {
               {/* Kontroller */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div>
-                  <label htmlFor="station-select" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label htmlFor="station-select" className="block text-sm font-semibold text-gray-300 mb-3">
                     İstasyon Seçin
                   </label>
                   <div className="relative">
@@ -317,17 +326,17 @@ export default function ChartsPage() {
                         const station = stations.find(s => s._id === e.target.value);
                         setSelectedStation(station || null);
                       }}
-                      className="block w-full px-4 py-3 bg-white/80 border border-gray-200/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm text-gray-900 appearance-none"
+                      className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 sm:text-sm text-white appearance-none backdrop-blur-sm"
                     >
-                      <option value="" className="text-gray-900">İstasyon seçin...</option>
+                      <option value="" className="bg-gray-800 text-white">İstasyon seçin...</option>
                       {stations.map((station) => (
-                        <option key={station._id} value={station._id} className="text-gray-900">
+                        <option key={station._id} value={station._id} className="bg-gray-800 text-white">
                           {station.name} - {station.city}
                         </option>
                       ))}
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -335,7 +344,7 @@ export default function ChartsPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="chart-type" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label htmlFor="chart-type" className="block text-sm font-semibold text-gray-300 mb-3">
                     Grafik Türü
                   </label>
                   <div className="relative">
@@ -343,15 +352,15 @@ export default function ChartsPage() {
                       id="chart-type"
                       value={chartType}
                       onChange={(e) => setChartType(e.target.value as ChartType)}
-                      className="block w-full px-4 py-3 bg-white/80 border border-gray-200/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm text-gray-900 appearance-none"
+                      className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 sm:text-sm text-white appearance-none backdrop-blur-sm"
                     >
-                      <option value="temperature" className="text-gray-900">🌡️ Sıcaklık</option>
-                      <option value="humidity" className="text-gray-900">💧 Nem</option>
-                      <option value="windSpeed" className="text-gray-900">💨 Rüzgar Hızı</option>
-                      <option value="pressure" className="text-gray-900">📊 Basınç</option>
+                      <option value="temperature" className="bg-gray-800 text-white">🌡️ Sıcaklık</option>
+                      <option value="humidity" className="bg-gray-800 text-white">💧 Nem</option>
+                      <option value="windSpeed" className="bg-gray-800 text-white">💨 Rüzgar Hızı</option>
+                      <option value="pressure" className="bg-gray-800 text-white">📊 Basınç</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -359,7 +368,7 @@ export default function ChartsPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="time-range" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label htmlFor="time-range" className="block text-sm font-semibold text-gray-300 mb-3">
                     Zaman Aralığı
                   </label>
                   <div className="relative">
@@ -367,14 +376,14 @@ export default function ChartsPage() {
                       id="time-range"
                       value={timeRange}
                       onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-                      className="block w-full px-4 py-3 bg-white/80 border border-gray-200/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 sm:text-sm text-gray-900 appearance-none"
+                      className="block w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 sm:text-sm text-white appearance-none backdrop-blur-sm"
                     >
-                      <option value="24h" className="text-gray-900">📅 Son 24 Saat</option>
-                      <option value="7d" className="text-gray-900">📆 Son 7 Gün</option>
-                      <option value="30d" className="text-gray-900">🗓️ Son 30 Gün</option>
+                      <option value="24h" className="bg-gray-800 text-white">📅 Son 24 Saat</option>
+                      <option value="7d" className="bg-gray-800 text-white">📆 Son 7 Gün</option>
+                      <option value="30d" className="bg-gray-800 text-white">🗓️ Son 30 Gün</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
@@ -384,12 +393,12 @@ export default function ChartsPage() {
 
               {/* Grafik */}
               {selectedStation && (
-                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30 shadow-lg">
+                <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-2xl">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900">
+                    <h3 className="text-xl font-bold text-white">
                       {selectedStation.name} - {getChartTitle()}
                     </h3>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <div className="flex items-center space-x-2 text-sm text-gray-300">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
@@ -405,24 +414,24 @@ export default function ChartsPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="h-[500px] bg-gradient-to-br from-white/50 to-blue-50/30 rounded-xl p-4 border border-gray-200/50">
+                    <div className="h-[500px] bg-gradient-to-br from-black/20 to-purple-500/10 rounded-xl p-4 border border-white/20">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.5} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" opacity={0.3} />
                           <XAxis 
                             dataKey="timestamp" 
-                            tick={{ fontSize: 12, fill: '#6b7280' }}
+                            tick={{ fontSize: 12, fill: '#ffffff' }}
                             angle={-45}
                             textAnchor="end"
                             height={80}
-                            stroke="#9ca3af"
+                            stroke="#ffffff"
                           />
                           <YAxis 
-                            label={{ value: getYAxisLabel(), angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#6b7280' } }}
+                            label={{ value: getYAxisLabel(), angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#ffffff' } }}
                             domain={['dataMin', 'dataMax']}
                             allowDataOverflow={false}
-                            tick={{ fontSize: 12, fill: '#6b7280' }}
-                            stroke="#9ca3af"
+                            tick={{ fontSize: 12, fill: '#ffffff' }}
+                            stroke="#ffffff"
                           />
                           <Tooltip 
                             contentStyle={{
@@ -438,8 +447,8 @@ export default function ChartsPage() {
                             dataKey={getDataKey()} 
                             stroke={getColor()} 
                             strokeWidth={3}
-                            dot={{ r: 6, fill: getColor(), strokeWidth: 2, stroke: '#fff' }}
-                            activeDot={{ r: 8, stroke: getColor(), strokeWidth: 2, fill: '#fff' }}
+                            dot={{ r: 3, fill: getColor(), strokeWidth: 1, stroke: '#fff' }}
+                            activeDot={{ r: 5, stroke: getColor(), strokeWidth: 2, fill: '#fff' }}
                             name={getChartTitle()}
                           />
                         </LineChart>
@@ -453,7 +462,7 @@ export default function ChartsPage() {
                         <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                         </svg>
-                        <div className="text-gray-500 text-lg">Seçilen zaman aralığında veri bulunamadı.</div>
+                        <div className="text-gray-300 text-lg">Seçilen zaman aralığında veri bulunamadı.</div>
                       </div>
                     </div>
                   )}
